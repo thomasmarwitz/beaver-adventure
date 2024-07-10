@@ -18,20 +18,24 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            max-width: 100%;
+            margin: auto;
         }
         #game-board {
             height: 50%;
             display: grid;
-            gap: 1px;
             background-color: #f0f0f0;
-            padding: 5px;
+            overflow: auto;
         }
         .cell {
+            width: 20px;
+            height: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: white;
             font-size: 16px;
+            border: 1px solid #e0e0e0;
         }
         .player {
             font-size: 20px;
@@ -41,7 +45,7 @@
             width: fit-content;
         }
         #dialog-box {
-            height: 20%;
+            height: 15%;
             padding: 10px;
             overflow-y: auto;
             background-color: #e0e0e0;
@@ -49,10 +53,10 @@
             border-bottom: 2px solid #ccc;
         }
         #controls {
-            height: 30%;
+            height: 25%;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
             gap: 10px;
             padding: 10px;
         }
@@ -66,8 +70,8 @@
         }
         #up { grid-area: 1 / 2 / 2 / 3; }
         #left { grid-area: 2 / 1 / 3 / 2; }
+        #down { grid-area: 2 / 2 / 3 / 3; }
         #right { grid-area: 2 / 3 / 3 / 4; }
-        #down { grid-area: 3 / 2 / 4 / 3; }
     </style>
 </head>
 <body>
@@ -77,21 +81,30 @@
         <div id="controls">
             <button id="up" class="control-btn">↑</button>
             <button id="left" class="control-btn">←</button>
-            <button id="right" class="control-btn">→</button>
             <button id="down" class="control-btn">↓</button>
+            <button id="right" class="control-btn">→</button>
         </div>
     </div>
     <script>
-        const width = 10;
-        const height = 15;
-        let playerX = Math.floor(width / 2);
-        let playerY = Math.floor(height / 2);
+        let width, height;
+        let playerX, playerY;
         let facingRight = true;
+
+        function initializeGame() {
+            const gameBoard = document.getElementById('game-board');
+            const boardRect = gameBoard.getBoundingClientRect();
+            width = Math.floor(boardRect.width / 20);
+            height = Math.floor(boardRect.height / 20);
+            playerX = Math.floor(width / 2);
+            playerY = Math.floor(height / 2);
+            createBoard();
+            updateBoard();
+        }
 
         function createBoard() {
             const gameBoard = document.getElementById('game-board');
-            gameBoard.style.gridTemplateColumns = `repeat(${width}, 1fr)`;
-            gameBoard.style.gridTemplateRows = `repeat(${height}, 1fr)`;
+            gameBoard.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+            gameBoard.style.gridTemplateRows = `repeat(${height}, 20px)`;
             gameBoard.innerHTML = '';
             for (let y = 0; y < height; y++) {
                 for (let x = 0; x < width; x++) {
@@ -141,8 +154,8 @@
             dialogBox.textContent = message;
         }
 
-        createBoard();
-        updateBoard();
+        window.addEventListener('load', initializeGame);
+        window.addEventListener('resize', initializeGame);
 
         // Event listeners for on-screen buttons
         document.getElementById('up').addEventListener('click', () => movePlayer('up'));
