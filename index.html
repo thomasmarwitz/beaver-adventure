@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile-First ASCII Game</title>
+    <title>Mobile-First ASCII Game (18x18)</title>
     <style>
         * {
             box-sizing: border-box;
@@ -31,10 +31,12 @@
         }
         #game-board {
             display: inline-grid;
+            grid-template-columns: repeat(18, 22px);
+            grid-template-rows: repeat(18, 22px);
         }
         .cell {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -93,25 +95,15 @@
         </div>
     </div>
     <script>
-        let width, height;
-        let playerX, playerY;
+        // The rest of the JavaScript remains unchanged
+        const width = 18;
+        const height = 18;
+        let playerX = Math.floor(width / 2);
+        let playerY = Math.floor(height / 2);
         let facingRight = true;
-
-        function initializeGame() {
-            const gameBoardContainer = document.getElementById('game-board-container');
-            const containerRect = gameBoardContainer.getBoundingClientRect();
-            width = Math.floor(containerRect.width / 20);
-            height = Math.floor(containerRect.height / 20);
-            playerX = Math.floor(width / 2);
-            playerY = Math.floor(height / 2);
-            createBoard();
-            updateBoard();
-        }
 
         function createBoard() {
             const gameBoard = document.getElementById('game-board');
-            gameBoard.style.gridTemplateColumns = `repeat(${width}, 20px)`;
-            gameBoard.style.gridTemplateRows = `repeat(${height}, 20px)`;
             gameBoard.innerHTML = '';
             for (let y = 0; y < height; y++) {
                 for (let x = 0; x < width; x++) {
@@ -161,8 +153,8 @@
             dialogBox.textContent = message;
         }
 
-        window.addEventListener('load', initializeGame);
-        window.addEventListener('resize', initializeGame);
+        createBoard();
+        updateBoard();
 
         // Event listeners for on-screen buttons
         document.getElementById('up').addEventListener('click', () => movePlayer('up'));
@@ -179,8 +171,6 @@
                 case 'ArrowRight': movePlayer('right'); break;
             }
         });
-
-        // hi github-pages
     </script>
 </body>
 </html>
