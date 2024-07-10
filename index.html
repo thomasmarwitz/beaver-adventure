@@ -21,11 +21,16 @@
             max-width: 100%;
             margin: auto;
         }
-        #game-board {
-            height: 50%;
-            display: grid;
+        #game-board-container {
+            height: 55%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: #f0f0f0;
             overflow: auto;
+        }
+        #game-board {
+            display: inline-grid;
         }
         .cell {
             width: 20px;
@@ -45,7 +50,7 @@
             width: fit-content;
         }
         #dialog-box {
-            height: 15%;
+            height: 20%;
             padding: 10px;
             overflow-y: auto;
             background-color: #e0e0e0;
@@ -76,7 +81,9 @@
 </head>
 <body>
     <div id="game-container">
-        <div id="game-board"></div>
+        <div id="game-board-container">
+            <div id="game-board"></div>
+        </div>
         <div id="dialog-box">Welcome to the Beaver Adventure! Use the controls to move.</div>
         <div id="controls">
             <button id="up" class="control-btn">↑</button>
@@ -91,10 +98,10 @@
         let facingRight = true;
 
         function initializeGame() {
-            const gameBoard = document.getElementById('game-board');
-            const boardRect = gameBoard.getBoundingClientRect();
-            width = Math.floor(boardRect.width / 20);
-            height = Math.floor(boardRect.height / 20);
+            const gameBoardContainer = document.getElementById('game-board-container');
+            const containerRect = gameBoardContainer.getBoundingClientRect();
+            width = Math.floor(containerRect.width / 20);
+            height = Math.floor(containerRect.height / 20);
             playerX = Math.floor(width / 2);
             playerY = Math.floor(height / 2);
             createBoard();
