@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Div-based ASCII Game</title>
+    <title>Div-based ASCII Game with Directional Emoji</title>
     <style>
         #game-board {
             display: grid;
@@ -26,6 +26,10 @@
         .player {
             font-size: 20px;
         }
+        .emote {
+            transform: scale(-1, 1);
+            width: fit-content;
+        }
     </style>
 </head>
 <body>
@@ -35,6 +39,7 @@
         const height = 10;
         let playerX = Math.floor(width / 2);
         let playerY = Math.floor(height / 2);
+        let facingRight = true;
 
         function createBoard() {
             const gameBoard = document.getElementById('game-board');
@@ -56,10 +61,10 @@
                 const x = parseInt(cell.dataset.x);
                 const y = parseInt(cell.dataset.y);
                 if (x === playerX && y === playerY) {
-                    cell.textContent = '🦫';
+                    cell.innerHTML = `<span class="${facingRight ? 'emote' : ''}">${'🦫'}</span>`;
                     cell.classList.add('player');
                 } else {
-                    cell.textContent = '';
+                    cell.textContent = '.';
                     cell.classList.remove('player');
                 }
             });
@@ -71,8 +76,14 @@
             switch(event.key) {
                 case 'ArrowUp': if (playerY > 0) playerY--; break;
                 case 'ArrowDown': if (playerY < height - 1) playerY++; break;
-                case 'ArrowLeft': if (playerX > 0) playerX--; break;
-                case 'ArrowRight': if (playerX < width - 1) playerX++; break;
+                case 'ArrowLeft': 
+                    if (playerX > 0) playerX--; 
+                    facingRight = false;
+                    break;
+                case 'ArrowRight': 
+                    if (playerX < width - 1) playerX++; 
+                    facingRight = true;
+                    break;
             }
             updateBoard();
         });
