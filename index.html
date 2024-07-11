@@ -37,7 +37,6 @@
             justify-content: center;
             align-items: center;
             background-color: white;
-            border: 1px solid #e0e0e0;
         }
         .emote {
             transform: scale(-1, 1);
@@ -92,6 +91,20 @@
         const CELL_SIZE = 20;
         const CELL_FONT_SIZE = 16;
 
+        function rep(value, times) {
+            return Array.from({length: times}, () => value);
+        }
+        
+        const LAWN = {"text": "", "color": "#669900"}
+        const TREE = {"text": "🌲", "color": "#669900"}
+        const WALL = {"text": "", "color": "#734d26"}
+        const DOOR = {"text": "🚪", "color": "#734d26"}
+        const WINDOW = {"text": "🪟", "color": "#734d26"}
+        const BED = {"text": "🛌", "color": "#d2a679"}
+        const INSIDE = {"text": "", "color": "#d2a679"}
+        const CHAIR = {"text": "🪑", "color": "#d2a679"}
+        const TABLE = {"text": "🪵", "color": "#d2a679"}
+
         class Cell {
             constructor(x, y) {
                 this.x = x;
@@ -101,20 +114,15 @@
                 this.element.style.width = `${CELL_SIZE}px`;
                 this.element.style.height = `${CELL_SIZE}px`;
                 this.element.style.fontSize = `${CELL_FONT_SIZE}px`;
-                this.setText('');
-                this.setBackground('white');
-            }
-
-            setText(text) {
-                this.element.textContent = text;
-            }
-
-            setBackground(color) {
-                this.element.style.backgroundColor = color;
             }
 
             setContent(content) {
-                this.element.innerHTML = content;
+                this.element.textContent = content.text;
+                this.element.style.backgroundColor = content.color;
+            }
+
+            setPlayer(player) {
+                this.element.innerHTML = player.getRepresentation();
             }
         }
 
@@ -141,15 +149,44 @@
             }
 
             getRepresentation() {
-                return `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`;
+                return `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`
             }
         }
+
+        class Scene {
+            constructor(grid, player, dialog) {
+                this.grid = grid;
+                this.player = player;
+                this.dialog = dialog;
+            }
+
+            setCell(x, y, content) {
+                this.grid[y][x] = content;
+            }
+        }
+
+        const HOME_SCENE = new Scene(
+            [
+                rep(LAWN, 16),
+                [...rep(LAWN, 4), ...rep(WALL, 8), ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, INSIDE, BED, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, WINDOW, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, TABLE, CHAIR, INSIDE, WALL, ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
+                [...rep(LAWN, 4), WALL, DOOR, WALL, WALL, WALL, WALL, WALL, WALL, ...rep(LAWN, 4)],
+                ...rep([...rep(LAWN, 4), ...rep(INSIDE, 8), ...rep(LAWN, 4)], 7),
+            ],
+            {x: 6, y: 3},
+            "Welcome to your cozy beaver lodge! You can rest here."
+        );
 
         class Game {
             constructor(width, height) {
                 this.width = width;
                 this.height = height;
-                this.player = new Player(Math.floor(width / 2), Math.floor(height / 2));
+                this.player = new Player(0, 0);
                 this.cells = [];
                 this.createBoard();
             }
@@ -167,15 +204,28 @@
                         this.cells[y][x] = cell;
                     }
                 }
-                this.updatePlayerPosition();
             }
 
             getCellAt(x, y) {
                 return this.cells[y][x];
             }
 
+            setScene(scene) {
+                this.player.x = scene.player.x;
+                this.player.y = scene.player.y;
+                
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        this.getCellAt(x, y).setContent(scene.grid[y][x]);
+                    }
+                }
+                
+                this.updatePlayerPosition();
+                this.updateDialog(scene.dialog);
+            }
+
             updatePlayerPosition() {
-                this.getCellAt(this.player.x, this.player.y).setContent(this.player.getRepresentation());
+                this.getCellAt(this.player.x, this.player.y).setPlayer(this.player);
             }
 
             movePlayer(direction) {
@@ -185,7 +235,7 @@
                 this.player.move(direction, this.width, this.height);
 
                 if (oldX !== this.player.x || oldY !== this.player.y) {
-                    this.getCellAt(oldX, oldY).setText('');
+                    this.getCellAt(oldX, oldY).setContent(HOME_SCENE.grid[oldY][oldX]);
                     this.updatePlayerPosition();
                     this.updateDialog(`Moved ${direction}`);
                 }
@@ -198,6 +248,7 @@
         }
 
         const game = new Game(GAME_WIDTH, GAME_HEIGHT);
+        game.setScene(HOME_SCENE);
 
         // Event listeners for on-screen buttons
         document.getElementById('up').addEventListener('click', () => game.movePlayer('up'));
@@ -214,9 +265,6 @@
                 case 'ArrowRight': game.movePlayer('right'); break;
             }
         });
-        
-        game.getCellAt(0, 0).setText('❤️');
-        game.getCellAt(1, 0).setText('🖤');
     </script>
 </body>
 </html>
