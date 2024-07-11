@@ -147,7 +147,7 @@
         const GAME_HEIGHT = 16;
         const CELL_SIZE = 20;
         const CELL_FONT_SIZE = 16;
-        
+
         class Controls {
             constructor(game) {
                 this.game = game;
@@ -169,9 +169,17 @@
 
             setContinueControl(callback) {
                 this.controlsContainer.innerHTML = `
+                    <div style="grid-column: 1 / span 3;"></div>
                     <button id="continue" class="control-btn" style="grid-column: 1 / span 3;">Continue</button>
+                    <div style="grid-column: 1 / span 3;"></div>
                 `;
-                document.getElementById('continue').addEventListener('click', callback);
+                const continueButton = document.getElementById('continue');
+                continueButton.addEventListener('click', () => {
+                    continueButton.disabled = true;
+                    callback().then(() => {
+                        continueButton.disabled = false;
+                    });
+                });
             }
         }
 
@@ -246,6 +254,7 @@
                 this.height = height;
                 this.player = new Player(0, 0);
                 this.cells = [];
+                this.controls = new Controls(this);
                 this.createBoard();
             }
 
@@ -333,35 +342,35 @@
             async function startNewGame() {
                 const game = new Game(GAME_WIDTH, GAME_HEIGHT);
                 game.setScene(HOME_SCENE);
+                game.player.hide(); // Hide the main player at the start
 
                 const dialogBox = document.getElementById('dialog-box');
 
                 // First dialog
-                const introduction_1 = `
-                    Es waren einmal zwei Biber, die in einem wunderschönen Biberbau lebten.
-                `;
+                const introduction_1 = `Es waren einmal zwei Biber, die in einem wunderschönen Biberbau lebten.`;
                 await typeWriter(introduction_1, dialogBox);
                 
-                const path = [
-                    [7, 15], [7, 14], [7, 13], [7, 12], // up
-                    [6, 12], [5, 12], [4, 12], // left
-                    [4, 11], [4, 10], [4, 9], [4, 8], [4, 7], [4, 6], [4, 5], [4, 4], // up
-                    [5, 4] // right
-                ]
-                await moveBeavers(game, path, 300, "tuple");
+                game.setContinueControl(async () => {
+                    const path = [
+                        [7, 15], [7, 14], [7, 13], [7, 12], // up
+                        [6, 12], [5, 12], [4, 12], // left
+                        [4, 11], [4, 10], [4, 9], [4, 8], [4, 7], [4, 6], [4, 5], [4, 4], // up
+                        [5, 4] // right
+                    ];
+                    await moveBeavers(game, path, 300, "tuple");
 
-                dialogBox.textContent = '';
-                const introduction_2 = "Es war sehr fnot 👆."
-                await typeWriter(introduction_2, dialogBox);
-                game.getCellAt(6, 4).text("👆")
-                game.getCellAt(3, 4).text("👆")
+                    dialogBox.textContent = '';
+                    const introduction_2 = "Es war sehr fnot 👆.";
+                    await typeWriter(introduction_2, dialogBox);
+                    game.getCellAt(6, 4).text("👆");
+                    game.getCellAt(3, 4).text("👆");
 
-
-                // Set up game controls
-                document.getElementById('up').addEventListener('click', () => game.movePlayer('up'));
-                document.getElementById('down').addEventListener('click', () => game.movePlayer('down'));
-                document.getElementById('left').addEventListener('click', () => game.movePlayer('left'));
-                document.getElementById('right').addEventListener('click', () => game.movePlayer('right'));
+                    game.setContinueControl(async () => {
+                        game.player.unhide(); // Unhide the main player
+                        game.updatePlayerPosition();
+                        game.setMovementControls(); // Switch to movement controls
+                    });
+                });
 
                 // Keyboard controls
                 document.addEventListener('keydown', (event) => {
