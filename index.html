@@ -85,26 +85,13 @@
             <button id="right" class="control-btn">→</button>
         </div>
     </div>
+    <script src="assets.js"></script>
     <script>
         const GAME_WIDTH = 16;
         const GAME_HEIGHT = 16;
         const CELL_SIZE = 20;
         const CELL_FONT_SIZE = 16;
-
-        function rep(value, times) {
-            return Array.from({length: times}, () => value);
-        }
         
-        const LAWN = {"text": "", "color": "#669900"}
-        const TREE = {"text": "🌲", "color": "#669900"}
-        const WALL = {"text": "", "color": "#734d26"}
-        const DOOR = {"text": "🚪", "color": "#734d26"}
-        const WINDOW = {"text": "🪟", "color": "#734d26"}
-        const BED = {"text": "🛌", "color": "#d2a679"}
-        const INSIDE = {"text": "", "color": "#d2a679"}
-        const CHAIR = {"text": "🪑", "color": "#d2a679"}
-        const TABLE = {"text": "🪵", "color": "#d2a679"}
-
         class Cell {
             constructor(x, y) {
                 this.x = x;
@@ -153,35 +140,9 @@
             }
         }
 
-        class Scene {
-            constructor(grid, player, dialog) {
-                this.grid = grid;
-                this.player = player;
-                this.dialog = dialog;
-            }
+        
 
-            setCell(x, y, content) {
-                this.grid[y][x] = content;
-            }
-        }
-
-        const HOME_SCENE = new Scene(
-            [
-                rep(LAWN, 16),
-                [...rep(LAWN, 4), ...rep(WALL, 8), ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, INSIDE, BED, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, WINDOW, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, TABLE, CHAIR, INSIDE, WALL, ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, INSIDE, WALL, ...rep(LAWN, 4)],
-                [...rep(LAWN, 4), WALL, DOOR, WALL, WALL, WALL, WALL, WALL, WALL, ...rep(LAWN, 4)],
-                ...rep([...rep(LAWN, 4), ...rep(INSIDE, 8), ...rep(LAWN, 4)], 7),
-            ],
-            {x: 6, y: 3},
-            "Welcome to your cozy beaver lodge! You can rest here."
-        );
-
+        
         class Game {
             constructor(width, height) {
                 this.width = width;
