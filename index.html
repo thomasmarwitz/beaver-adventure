@@ -14,8 +14,49 @@
             height: 100%;
             font-family: Arial, sans-serif;
         }
-        #game-container {
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #7cba3e;
+            z-index: 1000;
+        }
+        #start-screen h1 {
+            font-size: 4rem;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .button-container {
+            display: flex;
+            gap: 1rem;
+        }
+        #new-game-button, #load-game-button {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #new-game-button:hover, #load-game-button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        #load-game-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #game-container {
+            display: none;
             flex-direction: column;
             height: 100%;
             max-width: 100%;
@@ -73,6 +114,13 @@
     </style>
 </head>
 <body>
+    <div id="start-screen">
+        <h1>Wo ist mein Biber 🦫?</h1>
+        <div class="button-container">
+            <button id="new-game-button">New Game</button>
+            <button id="load-game-button" disabled>Load Game</button>
+        </div>
+    </div>
     <div id="game-container">
         <div id="game-board-container">
             <div id="game-board"></div>
@@ -140,9 +188,6 @@
             }
         }
 
-        
-
-        
         class Game {
             constructor(width, height) {
                 this.width = width;
@@ -208,22 +253,42 @@
             }
         }
 
-        const game = new Game(GAME_WIDTH, GAME_HEIGHT);
-        game.setScene(HOME_SCENE);
+        document.addEventListener('DOMContentLoaded', () => {
+            const startScreen = document.getElementById('start-screen');
+            const newGameButton = document.getElementById('new-game-button');
+            const loadGameButton = document.getElementById('load-game-button');
+            const gameContainer = document.getElementById('game-container');
 
-        // Event listeners for on-screen buttons
-        document.getElementById('up').addEventListener('click', () => game.movePlayer('up'));
-        document.getElementById('down').addEventListener('click', () => game.movePlayer('down'));
-        document.getElementById('left').addEventListener('click', () => game.movePlayer('left'));
-        document.getElementById('right').addEventListener('click', () => game.movePlayer('right'));
+            newGameButton.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                gameContainer.style.display = 'flex';
+                startNewGame();
+            });
 
-        // Keyboard controls
-        document.addEventListener('keydown', (event) => {
-            switch(event.key) {
-                case 'ArrowUp': game.movePlayer('up'); break;
-                case 'ArrowDown': game.movePlayer('down'); break;
-                case 'ArrowLeft': game.movePlayer('left'); break;
-                case 'ArrowRight': game.movePlayer('right'); break;
+            loadGameButton.addEventListener('click', () => {
+                // Load game functionality to be implemented later
+                console.log('Load game functionality not yet implemented');
+            });
+
+            function startNewGame() {
+                const game = new Game(GAME_WIDTH, GAME_HEIGHT);
+                game.setScene(HOME_SCENE);
+
+                // Event listeners for on-screen buttons
+                document.getElementById('up').addEventListener('click', () => game.movePlayer('up'));
+                document.getElementById('down').addEventListener('click', () => game.movePlayer('down'));
+                document.getElementById('left').addEventListener('click', () => game.movePlayer('left'));
+                document.getElementById('right').addEventListener('click', () => game.movePlayer('right'));
+
+                // Keyboard controls
+                document.addEventListener('keydown', (event) => {
+                    switch(event.key) {
+                        case 'ArrowUp': game.movePlayer('up'); break;
+                        case 'ArrowDown': game.movePlayer('down'); break;
+                        case 'ArrowLeft': game.movePlayer('left'); break;
+                        case 'ArrowRight': game.movePlayer('right'); break;
+                    }
+                });
             }
         });
     </script>
