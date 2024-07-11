@@ -141,6 +141,7 @@
         </div>
     </div>
     <script src="assets.js"></script>
+    <script src="helper.js"></script>
     <script>
         const GAME_WIDTH = 16;
         const GAME_HEIGHT = 16;
@@ -161,6 +162,10 @@
             setContent(content) {
                 this.element.textContent = content.text;
                 this.element.style.backgroundColor = content.color;
+            }
+
+            text(text) {
+                this.element.textContent = text;
             }
 
             setPlayer(player) {
@@ -192,6 +197,11 @@
 
             getRepresentation() {
                 return `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`
+            }
+
+            setFacingRight(facingRight) {
+                console.warn("called")
+                this.facingRight = facingRight;
             }
         }
 
@@ -277,11 +287,34 @@
                 console.log('Load game functionality not yet implemented');
             });
 
-            function startNewGame() {
+            async function startNewGame() {
                 const game = new Game(GAME_WIDTH, GAME_HEIGHT);
                 game.setScene(HOME_SCENE);
 
-                // Event listeners for on-screen buttons
+                const dialogBox = document.getElementById('dialog-box');
+
+                // First dialog
+                const introduction_1 = `
+                    Es waren einmal zwei Biber, die in einem wunderschönen Biberbau lebten.
+                `;
+                await typeWriter(introduction_1, dialogBox);
+                
+                const path = [
+                    [7, 15], [7, 14], [7, 13], [7, 12], // up
+                    [6, 12], [5, 12], [4, 12], // left
+                    [4, 11], [4, 10], [4, 9], [4, 8], [4, 7], [4, 6], [4, 5], [4, 4], // up
+                    [5, 4] // right
+                ]
+                await moveBeavers(game, path, 300, "tuple");
+
+                dialogBox.textContent = '';
+                const introduction_2 = "Es war sehr fnot 👆."
+                await typeWriter(introduction_2, dialogBox);
+                game.getCellAt(6, 4).text("👆")
+                game.getCellAt(3, 4).text("👆")
+
+
+                // Set up game controls
                 document.getElementById('up').addEventListener('click', () => game.movePlayer('up'));
                 document.getElementById('down').addEventListener('click', () => game.movePlayer('down'));
                 document.getElementById('left').addEventListener('click', () => game.movePlayer('left'));
