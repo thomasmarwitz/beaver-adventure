@@ -30,23 +30,14 @@
             overflow: auto;
         }
         #game-board {
-            /* Actual dimensions will be adjusted during Game init */
             display: inline-grid;
-            grid-template-columns: repeat(16, 20px); 
-            grid-template-rows: repeat(16, 20px);
         }
         .cell {
-            width: 20px;
-            height: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: white;
-            font-size: 16px;
             border: 1px solid #e0e0e0;
-        }
-        .player {
-            /* ATM, don't differentiate between fields and player */
         }
         .emote {
             transform: scale(-1, 1);
@@ -96,12 +87,20 @@
         </div>
     </div>
     <script>
+        const GAME_WIDTH = 16;
+        const GAME_HEIGHT = 16;
+        const CELL_SIZE = 20;
+        const CELL_FONT_SIZE = 16;
+
         class Cell {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
                 this.element = document.createElement('div');
                 this.element.classList.add('cell');
+                this.element.style.width = `${CELL_SIZE}px`;
+                this.element.style.height = `${CELL_SIZE}px`;
+                this.element.style.fontSize = `${CELL_FONT_SIZE}px`;
                 this.setText('');
                 this.setBackground('white');
             }
@@ -114,12 +113,35 @@
                 this.element.style.backgroundColor = color;
             }
 
-            setPlayer(isPlayer, facingRight) {
-                if (isPlayer) {
-                    this.element.innerHTML = `<span class="${facingRight ? 'emote' : ''}">${'🦫'}</span>`;
-                } else {
-                    this.setText('');
+            setContent(content) {
+                this.element.innerHTML = content;
+            }
+        }
+
+        class Player {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.facingRight = true;
+            }
+
+            move(direction, maxWidth, maxHeight) {
+                switch(direction) {
+                    case 'up': if (this.y > 0) this.y--; break;
+                    case 'down': if (this.y < maxHeight - 1) this.y++; break;
+                    case 'left': 
+                        if (this.x > 0) this.x--; 
+                        this.facingRight = false;
+                        break;
+                    case 'right': 
+                        if (this.x < maxWidth - 1) this.x++; 
+                        this.facingRight = true;
+                        break;
                 }
+            }
+
+            getRepresentation() {
+                return `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`;
             }
         }
 
@@ -127,17 +149,15 @@
             constructor(width, height) {
                 this.width = width;
                 this.height = height;
-                this.playerX = Math.floor(width / 2);
-                this.playerY = Math.floor(height / 2);
-                this.facingRight = true;
+                this.player = new Player(Math.floor(width / 2), Math.floor(height / 2));
                 this.cells = [];
                 this.createBoard();
             }
 
             createBoard() {
                 const gameBoard = document.getElementById('game-board');
-                gameBoard.style.gridTemplateColumns = `repeat(${this.width}, 20px)`;
-                gameBoard.style.gridTemplateRows = `repeat(${this.height}, 20px)`;
+                gameBoard.style.gridTemplateColumns = `repeat(${this.width}, ${CELL_SIZE}px)`;
+                gameBoard.style.gridTemplateRows = `repeat(${this.height}, ${CELL_SIZE}px)`;
                 gameBoard.innerHTML = '';
                 for (let y = 0; y < this.height; y++) {
                     this.cells[y] = [];
@@ -155,28 +175,17 @@
             }
 
             updatePlayerPosition() {
-                this.getCellAt(this.playerX, this.playerY).setPlayer(true, this.facingRight);
+                this.getCellAt(this.player.x, this.player.y).setContent(this.player.getRepresentation());
             }
 
             movePlayer(direction) {
-                const oldX = this.playerX;
-                const oldY = this.playerY;
+                const oldX = this.player.x;
+                const oldY = this.player.y;
 
-                switch(direction) {
-                    case 'up': if (this.playerY > 0) this.playerY--; break;
-                    case 'down': if (this.playerY < this.height - 1) this.playerY++; break;
-                    case 'left': 
-                        if (this.playerX > 0) this.playerX--; 
-                        this.facingRight = false;
-                        break;
-                    case 'right': 
-                        if (this.playerX < this.width - 1) this.playerX++; 
-                        this.facingRight = true;
-                        break;
-                }
+                this.player.move(direction, this.width, this.height);
 
-                if (oldX !== this.playerX || oldY !== this.playerY) {
-                    this.getCellAt(oldX, oldY).setPlayer(false);
+                if (oldX !== this.player.x || oldY !== this.player.y) {
+                    this.getCellAt(oldX, oldY).setText('');
                     this.updatePlayerPosition();
                     this.updateDialog(`Moved ${direction}`);
                 }
@@ -188,7 +197,7 @@
             }
         }
 
-        const game = new Game(16, 16);
+        const game = new Game(GAME_WIDTH, GAME_HEIGHT);
 
         // Event listeners for on-screen buttons
         document.getElementById('up').addEventListener('click', () => game.movePlayer('up'));
@@ -208,7 +217,6 @@
         
         game.getCellAt(0, 0).setText('❤️');
         game.getCellAt(1, 0).setText('🖤');
-
     </script>
 </body>
 </html>
