@@ -31,7 +31,7 @@ const BED = {"text": "🛌", "color": INSIDE_COLOR}
 const INSIDE = {"text": "", "color": INSIDE_COLOR}
 const CHAIR = {"text": "🪑", "color": INSIDE_COLOR}
 const LOGS = {"text": "🪵", "color": BASE_GREEN}
-const CORN = {"text": "🌾", "color": BASE_GREEN}
+const CORN = {"text": "🌾", "color": "#4d3300"}
 const WATER = {"text": "🌊", "color": WATER_COLOR}
 const PATH = {"text": "", "color": PATH_COLOR}
 const FLOWER = {"text": "🌸", "color": BASE_GREEN}
@@ -39,7 +39,7 @@ const BUSH = {"text": "🌿", "color": BASE_GREEN}
 const ROCK = {"text": "🪨", "color": BASE_GREEN}
 const LOG = {"text": "🌳", "color": BASE_GREEN}
 const SQUIRREL = {"text": "🐿️", "color": BASE_GREEN}
-const CARROT = {"text": "🥕", "color": BASE_GREEN}
+const CARROT = {"text": "🥕", "color": "#4d3300"}
 const BRICK = {"text": "🧱", "color": BASE_GREEN}
 
 // more emoji ideas
