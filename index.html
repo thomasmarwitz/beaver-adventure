@@ -148,6 +148,33 @@
         const CELL_SIZE = 20;
         const CELL_FONT_SIZE = 16;
         
+        class Controls {
+            constructor(game) {
+                this.game = game;
+                this.controlsContainer = document.getElementById('controls');
+            }
+
+            setMovementControls() {
+                this.controlsContainer.innerHTML = `
+                    <button id="up" class="control-btn">↑</button>
+                    <button id="left" class="control-btn">←</button>
+                    <button id="down" class="control-btn">↓</button>
+                    <button id="right" class="control-btn">→</button>
+                `;
+                document.getElementById('up').addEventListener('click', () => this.game.movePlayer('up'));
+                document.getElementById('down').addEventListener('click', () => this.game.movePlayer('down'));
+                document.getElementById('left').addEventListener('click', () => this.game.movePlayer('left'));
+                document.getElementById('right').addEventListener('click', () => this.game.movePlayer('right'));
+            }
+
+            setContinueControl(callback) {
+                this.controlsContainer.innerHTML = `
+                    <button id="continue" class="control-btn" style="grid-column: 1 / span 3;">Continue</button>
+                `;
+                document.getElementById('continue').addEventListener('click', callback);
+            }
+        }
+
         class Cell {
             constructor(x, y) {
                 this.x = x;
@@ -178,6 +205,7 @@
                 this.x = x;
                 this.y = y;
                 this.facingRight = true;
+                this.isHidden = false;
             }
 
             move(direction, maxWidth, maxHeight) {
@@ -196,12 +224,19 @@
             }
 
             getRepresentation() {
-                return `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`
+                return this.isHidden ? '' : `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`;
             }
 
             setFacingRight(facingRight) {
-                console.warn("called")
                 this.facingRight = facingRight;
+            }
+
+            hide() {
+                this.isHidden = true;
+            }
+
+            unhide() {
+                this.isHidden = false;
             }
         }
 
@@ -267,6 +302,14 @@
             updateDialog(message) {
                 const dialogBox = document.getElementById('dialog-box');
                 dialogBox.textContent = message;
+            }
+
+            setMovementControls() {
+                this.controls.setMovementControls();
+            }
+
+            setContinueControl(callback) {
+                this.controls.setContinueControl(callback);
             }
         }
 
