@@ -203,17 +203,21 @@
                 this.element.textContent = text;
             }
 
+            clear() {
+                this.text("")
+            }
+
             setPlayer(player) {
                 this.element.innerHTML = player.getRepresentation();
             }
         }
 
         class Player {
-            constructor(x, y) {
+            constructor(x, y, facingRight = true, isHidden = false) {
                 this.x = x;
                 this.y = y;
-                this.facingRight = true;
-                this.isHidden = false;
+                this.facingRight = facingRight;
+                this.isHidden = isHidden;
             }
 
             move(direction, maxWidth, maxHeight) {
@@ -232,6 +236,7 @@
             }
 
             getRepresentation() {
+                console.log("this.isHidden", this.isHidden)
                 return this.isHidden ? '' : `<span class="${this.facingRight ? 'emote' : ''}">${'🦫'}</span>`;
             }
 
@@ -252,7 +257,7 @@
             constructor(width, height) {
                 this.width = width;
                 this.height = height;
-                this.player = new Player(0, 0);
+                this.player = new Player(0, 0, true, true);
                 this.cells = [];
                 this.controls = new Controls(this);
                 this.createBoard();
@@ -359,17 +364,37 @@
                     ];
                     await moveBeavers(game, path, 300, "tuple");
 
-                    dialogBox.textContent = '';
                     const introduction_2 = "Es war sehr fnot 👆.";
                     await typeWriter(introduction_2, dialogBox);
                     game.getCellAt(6, 4).text("👆");
                     game.getCellAt(3, 4).text("👆");
 
                     game.setContinueControl(async () => {
-                        game.player.unhide(); // Unhide the main player
-                        game.updatePlayerPosition();
-                        game.setMovementControls(); // Switch to movement controls
+                        const introduction_3 = "Aber eines Morgens wachte einer der Biber (B2) auf, um festzustellen, dass der andere Biber (B1) nicht in seinem Bett und auch nicht im Biberbau zu sehen war. ";
+                        await typeWriter(introduction_3, dialogBox);
+                        game.getCellAt(6, 4).clear();
+                        game.getCellAt(3, 4).clear();
+                        game.getCellAt(5, 4).clear();
+
+                        game.setContinueControl(async () => {
+                            const introduction_4 = "Wirst du B2 helfen, B1 zu finden? 🦫";
+                            await typeWriter(introduction_4, dialogBox);
+
+                            game.setContinueControl(async () => {
+                                game.player.unhide(); // Unhide the main player
+                                game.updatePlayerPosition();
+                                game.setMovementControls(); // Switch to movement controls
+                            });
+                        });
                     });
+
+
+
+                    // game.setContinueControl(async () => {
+                    //     game.player.unhide(); // Unhide the main player
+                    //     game.updatePlayerPosition();
+                    //     game.setMovementControls(); // Switch to movement controls
+                    // });
                 });
 
                 // Keyboard controls

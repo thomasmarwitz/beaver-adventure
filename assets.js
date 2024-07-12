@@ -73,6 +73,6 @@ const HOME_SCENE = new Scene(
         [TREE, LEAF_TREE, TREE, TREE, TREE, LAWN, LAWN, PATH, GRASS, STATUE, GRASS, WATER, WATER, WATER_LILY, WATER, WATER],
         [TREE, TREE, TREE, TREE, TREE, BUSH, LAWN, PATH, LAWN, GRASS, LAWN, WATER, WATER, WATER, FISH, WATER],
     ],
-    {x: 3, y: 3},
+    {x: 4, y: 4},
     "Welcome to your cozy beaver lodge! Explore your home, garden, and the surrounding nature."
 );
